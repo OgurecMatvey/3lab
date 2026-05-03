@@ -18,3 +18,11 @@ class TourismBackend:
         self.yearly_totals = self.data.groupby('Год')['Количество_туристов'].sum().reset_index()
         return self.data
 
+    #Текст для вывода на график
+    def info_text(self):
+        if self.data is None:
+            return None
+        country_totals = self.data.groupby('Страна')['Количество_туристов'].sum()
+        text = f"Максимум: {country_totals.idxmax()} ({country_totals.max()})\n"\
+               f"Минимум: {country_totals.idxmin()} ({country_totals.min()})"
+        return text
