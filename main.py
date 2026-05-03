@@ -22,17 +22,13 @@ class MainWindow(QMainWindow):
 
         self.resize(1000, 700)
         self.data = None
-        self.backend = back11.TourismBackend()
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)
 
-        """
-        Там где Back17.TourismBackend() замени на название своего класса
-        """
         self.backends = {
-            "Вариант 17 (Рождаемость)": back17.TourismBackend(),
+            "Вариант 17 (Рождаемость)": back17.BirthRateBackend(),
             "Вариант 11 (Туризм)": back11.TourismBackend()
         }
 
@@ -87,7 +83,7 @@ class MainWindow(QMainWindow):
         if file_path:
             try:
 
-                self.data = self.backend.load_data(file_path)
+                self.data = self.current_backend.load_data(file_path)
                 self.fill_table()
 
 
@@ -107,7 +103,7 @@ class MainWindow(QMainWindow):
         self.canvas.axes.cla()
         n = self.n_input.value()
 
-        results = self.backend.calculate_moving_average_and_forecast(period_n=n, forecast_years=3)
+        results = self.current_backend.calculate_moving_average_and_forecast(period_n=n, forecast_years=3)
 
         if results:
             self.canvas.axes.plot(results['historical_years'], results['historical_values'], 'o-',
@@ -117,9 +113,9 @@ class MainWindow(QMainWindow):
             forecast_y = [results['historical_values'][-1]] + results['forecast_values']
             self.canvas.axes.plot(forecast_x, forecast_y, 'r--x', label='Прогноз')
 
-            if self.backend.info_text():
+            if self.current_backend.info_text():
 
-                self.canvas.axes.text(0.05, 0.90, self.backend.info_text(),
+                self.canvas.axes.text(0.05, 0.90, self.current_backend.info_text(),
                                       transform=self.canvas.axes.transAxes,
                                       fontsize=10, verticalalignment='top',
                                       bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.8,
