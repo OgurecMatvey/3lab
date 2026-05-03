@@ -26,3 +26,37 @@ class TourismBackend:
         text = f"Максимум: {country_totals.idxmax()} ({country_totals.max()})\n"\
                f"Минимум: {country_totals.idxmin()} ({country_totals.min()})"
         return text
+
+    #Метод для самого графика и прогноза
+    def calculate_moving_average_and_forecast(self, period_n, forecast_years):
+        if self.yearly_totals is None or len(self.yearly_totals) < period_n:
+            return None
+
+        #Данные для исходного графика
+        years = list(self.yearly_totals['Год'])
+        values = list(self.yearly_totals['Количество_туристов'])
+
+        #Данные для прогноза
+        forecast_years_list = []
+        forecast_values = []
+
+
+        current_window = values[-period_n:]
+        last_year = years[-1]
+
+        #Расчет прогноза
+        for i in range(forecast_years):
+            next_val = sum(current_window) / period_n
+            forecast_years_list.append(last_year + i + 1)
+            forecast_values.append(next_val)
+
+            # Обновляем окно
+            current_window.pop(0)
+            current_window.append(next_val)
+
+        return {
+            'historical_years': years,
+            'historical_values': values,
+            'forecast_years': forecast_years_list,
+            'forecast_values': forecast_values
+        }
