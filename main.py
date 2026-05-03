@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from pythonProject.VK.backends import back11, back17
+from pythonProject.tr_lab.backends import back11, back17
 
 
 class MplCanvas(FigureCanvas):
@@ -22,24 +22,18 @@ class MainWindow(QMainWindow):
 
         self.resize(1000, 700)
         self.data = None
-        self.backend = back11.TourismBackend()
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)
 
-        """
-        Там где Back17.TourismBackend() замени на название своего класса
-        """
         self.backends = {
-            "Вариант 17 (Рождаемость)": back17.TourismBackend(),
+            "Вариант 17 (Рождаемость)": back17.BirthRateBackend(),
             "Вариант 11 (Туризм)": back11.TourismBackend()
         }
-
-        # Устанавливаем бэкенд по умолчанию
         self.current_backend = self.backends["Вариант 17 (Рождаемость)"]
 
-        # --- Добавляем выпадающий список в интерфейс ---
+
         self.variant_selector = QComboBox()
         self.variant_selector.addItems(self.backends.keys())
         self.variant_selector.currentTextChanged.connect(self.change_variant)
@@ -86,11 +80,9 @@ class MainWindow(QMainWindow):
         file_path, _ = QFileDialog.getOpenFileName(self, "Открыть файл", "", "Data Files (*.csv *.json *.xlsx)")
         if file_path:
             try:
-
-                self.data = self.backend.load_data(file_path)
+                # ИСПРАВЛЕНО: используем current_backend
+                self.data = self.current_backend.load_data(file_path)
                 self.fill_table()
-
-
                 self.btn_calc.setEnabled(True)
             except Exception as e:
                 print(f"Ошибка загрузки файла: {e}")
@@ -107,7 +99,8 @@ class MainWindow(QMainWindow):
         self.canvas.axes.cla()
         n = self.n_input.value()
 
-        results = self.backend.calculate_moving_average_and_forecast(period_n=n, forecast_years=3)
+        # ИСПРАВЛЕНО: используем current_backend
+        results = self.current_backend.calculate_moving_average_and_forecast(period_n=n, forecast_years=3)
 
         if results:
             self.canvas.axes.plot(results['historical_years'], results['historical_values'], 'o-',
@@ -119,13 +112,14 @@ class MainWindow(QMainWindow):
             forecast_y = [results['historical_values'][-1]] + results['forecast_values']
             self.canvas.axes.plot(forecast_x, forecast_y, 'r--x', label='Прогноз')
 
-            if self.backend.info_text():
-
-                self.canvas.axes.text(0.05, 0.90, self.backend.info_text(),
+            # ИСПРАВЛЕНО: используем current_backend
+            if self.current_backend.info_text():
+                self.canvas.axes.text(0.05, 0.95, self.current_backend.info_text(),  # Немного поднял текст (0.95)
                                       transform=self.canvas.axes.transAxes,
                                       fontsize=10, verticalalignment='top',
                                       bbox=dict(boxstyle='round,pad=0.5', facecolor='white', alpha=0.8,
                                                 edgecolor='gray'))
+
         self.canvas.axes.set_title(self.current_backend.graph_title)
         self.canvas.axes.legend()
         self.canvas.axes.grid(True)
