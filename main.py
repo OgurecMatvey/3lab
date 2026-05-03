@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
         self.canvas.axes.cla()
         n = self.n_input.value()
 
-        results = self.current_backend.calculate_moving_average_and_forecast(period_n=n, forecast_years=3)
+        results = self.current_backend.calculate_moving_average_and_forecast(period_n=n, forecast_years=n)
 
         if results:
             self.canvas.axes.plot(results['historical_years'], results['historical_values'], 'o-',
