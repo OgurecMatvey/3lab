@@ -12,6 +12,8 @@ class TourismBackend:
     def load_data(self, file_path):
         if file_path.endswith('.json'):
             self.data = pd.read_json(file_path)
+        elif file_path.endswith('.xlsx'):
+            self.data = pd.read_excel(file_path)
         else:
             raise ValueError("Данный формат файла не поддерживается")
 
