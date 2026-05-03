@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from pythonProject.tr_lab.backends import back11, back17
+from backends import back11, back17
 
 
 class MplCanvas(FigureCanvas):
