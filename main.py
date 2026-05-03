@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from pythonProject.VK.backends import back11, back17
+from backends import back11, back17
 
 
 class MplCanvas(FigureCanvas):
@@ -112,8 +112,6 @@ class MainWindow(QMainWindow):
         if results:
             self.canvas.axes.plot(results['historical_years'], results['historical_values'], 'o-',
                                   label=self.current_backend.data_label, color='blue')
-
-            self.canvas.axes.plot(results['historical_years'], results['historical_ma'], 'g--', label=f'MA (n={n})')
 
             forecast_x = [results['historical_years'][-1]] + results['forecast_years']
             forecast_y = [results['historical_values'][-1]] + results['forecast_values']
